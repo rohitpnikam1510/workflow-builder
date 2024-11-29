@@ -2,3 +2,5 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '@xyflow/react/dist/style.css';
+@import url('./xy-theme.css');

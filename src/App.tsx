@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Header from './components/Header';
-import LeftPanel from './components/LeftPanel';
-import { RootState } from './redux/store';
+// import LeftPanel from './components/LeftPanel';
+import WorkFlowPanel from './components/WorkFlowPanel';
 import BottomPanel from './components/BottomPanel';
+
 import { setOutputData } from './redux/outputSlice';
+import { RootState } from './redux/store';
 
 const App: React.FC = () => {
 
@@ -44,10 +46,11 @@ const App: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-black flex flex-col">
       <Header />
       <div className="flex flex-grow pt-16">
-        <LeftPanel />
+        {/* <LeftPanel /> */}
+        <WorkFlowPanel />
       </div>
       <BottomPanel data={outputData.data} />
     </div>

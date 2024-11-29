@@ -47,10 +47,10 @@ const LeftPanel: React.FC = () => {
     };
 
     return (
-        <div className="bg-black text-white p-4 w-1/5 h-full border-r-2 border-skyblue h-3/5">
+        <div className="bg-black text-white p-4 w-1/5 h-full border-r-2 border-skyblue">
             {/* Select Example CSV Files */}
             <div className="mb-6">
-                <h2 className="text-skyblue text-lg font-semibold mb-2 border-b-2 border-skyblue">Select Example CSV Files</h2>
+                <h2 className="text-skyblue text-lg font-semibold mb-2 border-b-2 border-skyblue">Input</h2>
                 <ul className="space-y-2">
                     {exampleFiles.map((file) => (
                         <li key={file.name} className="bg-saffron p-2 rounded-md cursor-pointer hover:bg-skyblue transition-colors">
@@ -74,7 +74,7 @@ const LeftPanel: React.FC = () => {
 
             {/* Select Node */}
             <div className="mb-6">
-                <h2 className="text-skyblue text-lg font-semibold mb-2 border-b-2 border-skyblue">Select Node</h2>
+                <h2 className="text-skyblue text-lg font-semibold mb-2 border-b-2 border-skyblue">Transform Node</h2>
                 <div className="space-y-4">
                     {NodeType.map((node) => (
                         <div
