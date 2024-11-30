@@ -2,41 +2,42 @@ import React, { useRef, useCallback } from 'react';
 import {
     ReactFlow,
     ReactFlowProvider,
-    addEdge,
-    useNodesState,
-    useEdgesState,
     Controls,
     useReactFlow,
     Background,
     Connection,
 } from '@xyflow/react';
-
-import LeftPanel from '../components/LeftPanel';
-// import Sidebar from './Sidebar';
 import { DnDProvider, useDnD } from './DnDContext';
 
-const initialNodes = [
-    {
-        id: '1',
-        type: 'input',
-        data: { label: 'input node' },
-        position: { x: 250, y: 5 },
-    },
-];
+import LeftPanel from '../components/LeftPanel';
+import FileInputNode from './nodeElements/FileInputNode';
+import FilterNode from './nodeElements/FilterNode';
+import useStore from '../utils/useStore';
+import { v4 as uuidv4 } from 'uuid';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 const DnDFlow = () => {
-    const reactFlowWrapper = useRef(null);
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const reactFlowWrapper = useRef<HTMLDivElement>(null);
     const { screenToFlowPosition } = useReactFlow();
-    const [type] = useDnD();
+    const { type, name } = useDnD();
 
+    // Zustand store hooks
+    const { nodes, edges, setNodes, setEdges } = useStore();
+
+    // Handle new edge connections
     const onConnect = useCallback(
-        (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-        [setEdges],
+        (params: Connection) => {
+            const newEdge = {
+                id: uuidv4(),
+                source: params.source!,
+                target: params.target!,
+            };
+
+            setEdges([...edges, newEdge]);
+        },
+        [edges, setEdges],
     );
 
     const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -48,29 +49,29 @@ const DnDFlow = () => {
         (event: React.DragEvent<HTMLDivElement>) => {
             event.preventDefault();
 
-            // check if the dropped element is valid
-            if (!type) {
-                return;
-            }
+            if (!type) return;
 
-            // project was renamed to screenToFlowPosition
-            // and you don't need to subtract the reactFlowBounds.left/top anymore
-            // details: https://reactflow.dev/whats-new/2023-11-10
             const position = screenToFlowPosition({
                 x: event.clientX,
                 y: event.clientY,
             });
+
             const newNode = {
                 id: getId(),
                 type,
                 position,
-                data: { label: `${type} node` },
+                data: { label: `${name}` },
             };
 
-            setNodes((nds) => nds.concat(newNode));
+            setNodes([...nodes, newNode]);
         },
-        [screenToFlowPosition, type],
+        [nodes, screenToFlowPosition, type, name, setNodes],
     );
+
+    const nodeTypes = {
+        fileInput: FileInputNode,
+        filter: FilterNode,
+    };
 
     return (
         <div className="dndflow flex w-full h-[100vh]">
@@ -79,19 +80,17 @@ const DnDFlow = () => {
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
                     onDrop={onDrop}
                     onDragOver={onDragOver}
                     fitView
-                    style={{ backgroundColor: "#F7F9FB" }}
+                    style={{ backgroundColor: '#F7F9FB' }}
+                    nodeTypes={nodeTypes}
                 >
                     <Controls style={{ left: 10, bottom: 10 }} />
                     <Background />
                 </ReactFlow>
             </div>
-            {/* <Sidebar /> */}
         </div>
     );
 };
@@ -99,9 +98,9 @@ const DnDFlow = () => {
 const WorkFlowPanel: React.FC = () => (
     <div className="p-4 w-full h-full flex">
         <ReactFlowProvider>
-        <DnDProvider>
-            <DnDFlow />
-        </DnDProvider>
+            <DnDProvider>
+                <DnDFlow />
+            </DnDProvider>
         </ReactFlowProvider>
     </div>
 );

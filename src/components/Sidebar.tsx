@@ -2,7 +2,7 @@ import React from 'react';
 import { useDnD } from './DnDContext';
 
 const Sidebar: React.FC = () => {
-  const [, setType] = useDnD();
+  const {setType} = useDnD();
 
   const onDragStart = (event: React.DragEvent<HTMLDivElement>, nodeType: string): void => {
     setType(nodeType);

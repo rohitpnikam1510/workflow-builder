@@ -1,3 +1,5 @@
+import { openDB } from 'idb';
+
 const flattenObject = (
   obj: Record<string, unknown>,
   parentKey = '',
@@ -32,3 +34,14 @@ const flattenObject = (
 
 export const flattenData = (data: Array<Record<string, unknown>>): Array<Record<string, unknown>> =>
   data.map((item) => flattenObject(item));
+
+export const getColumnNames = async (): Promise<string[]> => {
+  const db = await openDB('csvDB', 1);
+  const store = db.transaction('csvStore', 'readonly').objectStore('csvStore');
+  const data = await store.get(0); // Assuming the data is stored at index 0
+  if (data && Array.isArray(data) && data.length > 0) {
+      // Assuming the first record contains the headers (keys)
+      return Object.keys(data[0]);
+  }
+  return [];
+};
